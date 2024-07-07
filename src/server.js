@@ -2,6 +2,7 @@ const express = require("express");
 const categoryRouter = require("./router/category-router");
 const bodyParser = require("body-parser");
 const userRoute = require("./router/user-router");
+const imageRouter = require("./router/image-router");
 const cors = require("cors");
 
 const mongooseConnection = require("./database/mongodb-connection");
@@ -17,6 +18,7 @@ app.use(cors({ origin: "http://localhost:5173" }));
 app.use("/category", categoryRouter);
 app.use("/user", userRoute);
 app.use("/menu", menuRouter);
+app.use("/image", imageRouter);
 
 app.get("/", (req, res) => {
   res.send("API is working");
