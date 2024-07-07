@@ -7,6 +7,7 @@ const cors = require("cors");
 
 const mongooseConnection = require("./database/mongodb-connection");
 const menuRouter = require("./router/menu-router");
+const testRouter = require("./router/test-router");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/category", categoryRouter);
 app.use("/user", userRoute);
 app.use("/menu", menuRouter);
 app.use("/image", imageRouter);
+app.use("/test", testRouter);
 
 app.get("/", (req, res) => {
   res.send("API is working");
