@@ -1,12 +1,23 @@
 const express = require("express");
 const { default: mongoose } = require("mongoose");
 const menuRouter = express.Router();
+const multer = require("multer");
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const menuSchema = mongoose.Schema({
-  category: String,
   item: String,
+  category: String,
   description: String,
+  type: String,
   price: Number,
+  rating: Number,
+  image: {
+    fileName: String,
+    data: Buffer,
+    contentType: String,
+    size: Number,
+  },
 });
 
 const MenuModel = mongoose.model("Menu", menuSchema);
@@ -19,16 +30,27 @@ menuRouter.get("/get-all-menu", async (req, res) => {
 
 // /add-menu-item
 
-menuRouter.post("/add-menu-item", (req, res) => {
+menuRouter.post("/add-menu-item", upload.single("menuImage"), (req, res) => {
   let reqBody = req.body;
 
+  let menuImage = req.file;
+
+  console.log(menuImage);
+
   if (reqBody && Object.keys(reqBody).length != 0) {
-    console.log(req.body);
     const obj = new MenuModel({
       category: reqBody.category,
       item: reqBody.item,
       description: reqBody.description,
       price: reqBody.price,
+      type: reqBody.type,
+      rating: reqBody.rating,
+      image: {
+        fileName: menuImage.originalname,
+        data: menuImage.buffer,
+        contentType: menuImage.contentType,
+        size: menuImage.size,
+      },
     });
     // insert document
     obj.save();
