@@ -43,4 +43,8 @@ testRouter.post("/add-category", upload.single("image"), async (req, res) => {
   }
 });
 
+testRouter.get("/error", (req, res) => {
+  res.status(500).send("Internal server error.");
+});
+
 module.exports = testRouter;
