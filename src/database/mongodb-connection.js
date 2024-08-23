@@ -1,8 +1,11 @@
+const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 
+dotenv.config();
+
 // encode username & password with encodeURIComponent
-const username = encodeURIComponent("krunaljumde");
-const password = encodeURIComponent("Monu@2000");
+const username = encodeURIComponent(process.env.MONGO_USERNAME);
+const password = encodeURIComponent(process.env.MONGO_PASSWORD);
 
 // concatinate all the rquired fields in uri
 const uri = `mongodb+srv://${username}:${password}@devspace-mongodb-cluste.e3zikt5.mongodb.net/petpooja?retryWrites=true&w=majority&appName=devspace-mongodb-cluster`;

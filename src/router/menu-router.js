@@ -1,9 +1,9 @@
 const express = require("express");
 const { default: mongoose } = require("mongoose");
 const menuRouter = express.Router();
-const multer = require("multer");
+const updateImageToCloudinary = require("../services/cloudinary");
 
-const upload = multer({ storage: multer.memoryStorage() });
+let assetPath = "DevSpace/petpooja/menus";
 
 const menuSchema = mongoose.Schema({
   item: String,
@@ -12,12 +12,7 @@ const menuSchema = mongoose.Schema({
   type: String,
   price: Number,
   rating: Number,
-  image: {
-    fileName: String,
-    data: Buffer,
-    contentType: String,
-    size: Number,
-  },
+  imageURL: String,
 });
 
 const MenuModel = mongoose.model("Menu", menuSchema);
@@ -28,34 +23,57 @@ menuRouter.get("/get-all-menu", async (req, res) => {
   res.json(result);
 });
 
-// /add-menu-item
-
-menuRouter.post("/add-menu-item", upload.single("menuImage"), (req, res) => {
+menuRouter.post("/add-menu-item", async (req, res) => {
   let reqBody = req.body;
-
-  let menuImage = req.file;
-
-  console.log(menuImage);
-
   if (reqBody && Object.keys(reqBody).length != 0) {
-    const obj = new MenuModel({
-      category: reqBody.category,
+    let result = await MenuModel.find({
       item: reqBody.item,
-      description: reqBody.description,
-      price: reqBody.price,
-      type: reqBody.type,
-      rating: reqBody.rating,
-      image: {
-        fileName: menuImage.originalname,
-        data: menuImage.buffer,
-        contentType: menuImage.contentType,
-        size: menuImage.size,
-      },
+      category: reqBody.category,
     });
-    // insert document
-    obj.save();
+    if (result && Object.keys(result).length > 0) {
+      res.status(400).send("Menu already exists.");
+    } else {
+      try {
+        let uploadObj = updateImageToCloudinary(
+          reqBody.image,
+          "",
+          reqBody.item
+        );
 
-    res.status(201).send("Menu Added.");
+        const obj = new MenuModel({
+          category: reqBody.category,
+          item: reqBody.item,
+          description: reqBody.description,
+          price: reqBody.price,
+          type: reqBody.type,
+          rating: reqBody.rating,
+          imageURL: uploadObj.url,
+        });
+        obj.save();
+        res.status(201).send("Menu Added.");
+      } catch (error) {
+        console.log(error);
+        res.status(500).send("Something went wrong.");
+      }
+    }
+  } else {
+    res.status(400).send("Please send valid menu details.");
+  }
+});
+
+menuRouter.get("/get-item-by-name", async (req, res) => {
+  let query = req.query;
+  if (query && Object.keys(query).length > 0) {
+    try {
+      let result = await MenuModel.find(
+        { category: query.category },
+        { __v: 0, _id: 0 }
+      );
+      res.status(200).send(result);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Something went wrong!");
+    }
   } else {
     res.status(400).send("Please send valid menu details.");
   }

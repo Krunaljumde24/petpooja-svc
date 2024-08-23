@@ -1,50 +1,63 @@
-const express = require("express");
-const { default: mongoose } = require("mongoose");
-const multer = require("multer");
+// const express = require("express");
+// const { default: mongoose } = require("mongoose");
+// const multer = require("multer");
+// const testRouter = express.Router();
+// const memStorage = multer.memoryStorage();
+// const upload = multer({ storage: memStorage });
+// const updateImageToCloudinary = require("../services/cloudinary");
+// const Category = require("../model/category");
 
-const testRouter = express.Router();
+// let catSchema = mongoose.Schema({
+//   name: String,
+//   image: {
+//     fileName: String,
+//     data: Buffer,
+//     contentType: String,
+//     size: Number,
+//   },
+// });
 
-const memStorage = multer.memoryStorage();
+// let CatModel = mongoose.model("TestCategory", catSchema);
 
-const upload = multer({ storage: memStorage });
+// testRouter.post("/add-category", upload.single("image"), async (req, res) => {
+//   console.log(req.body);
+//   console.log(req.file);
+//   let imgFile = req.file;
+//   try {
+//     let obj = new CatModel({
+//       name: req.body.name,
+//       image: {
+//         fileName: imgFile.filename,
+//         data: imgFile.buffer,
+//         contentType: imgFile.contentType,
+//         size: imgFile.size,
+//       },
+//     });
 
-let catSchema = mongoose.Schema({
-  name: String,
-  image: {
-    fileName: String,
-    data: Buffer,
-    contentType: String,
-    size: Number,
-  },
-});
+//     await obj.save();
+//     res.status(201).send("Category Added!");
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send("Failed to add category.");
+//   }
+// });
 
-let CatModel = mongoose.model("TestCategory", catSchema);
+// testRouter.get("/error", (req, res) => {
+//   res.status(500).send("Internal server error.");
+// });
 
-testRouter.post("/add-category", upload.single("image"), async (req, res) => {
-  console.log(req.body);
-  console.log(req.file);
-  let imgFile = req.file;
-  try {
-    let obj = new CatModel({
-      name: req.body.name,
-      image: {
-        fileName: imgFile.filename,
-        data: imgFile.buffer,
-        contentType: imgFile.contentType,
-        size: imgFile.size,
-      },
-    });
+// testRouter.post("/upload-image", (req, res) => {
+//   let { name, image } = req.body;
+//   let path = "DevSpace/Petpooja";
+//   try {
+//     let data = updateImageToCloudinary(image, path, name);
 
-    await obj.save();
-    res.status(201).send("Category Added!");
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Failed to add category.");
-  }
-});
+//     // data.secure_url; -> save this url in mongodb
 
-testRouter.get("/error", (req, res) => {
-  res.status(500).send("Internal server error.");
-});
+//     res.status(201).send("Image uploaded.");
+//   } catch (error) {
+//     res.status(500).send("Failed to upload image due to some internal error.");
+//   }
+// });
 
-module.exports = testRouter;
+// module.exports = testRouter;

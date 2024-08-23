@@ -1,49 +1,45 @@
 const express = require("express");
 const categoryRouter = express.Router();
 const mongoose = require("mongoose");
-const multer = require("multer");
+const updateImageToCloudinary = require("../services/cloudinary");
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+let assetPath = "DevSpace/petpooja/categories";
 
 const categorySchema = new mongoose.Schema({
   name: String,
-  image: {
-    fileName: String,
-    data: Buffer,
-    contentType: String,
-  },
+  imageURL: String,
 });
 
 const Category = mongoose.model("Category", categorySchema);
 
-categoryRouter.post("/add-category", upload.single("catImage"), (req, res) => {
-  let reqBody = req.body;
-  console.log(reqBody);
-  console.log(req.file);
-
-  // if (reqBody && Object.keys(reqBody).length != 0) {
-  // } else {
-  //   res.status(400).send("Please send valid category details.");
-  // }
-
-  // const obj = new Category({ name: category });
-  res.status(201).send("Category Added.");
-
-  // if (error.errmsg && error.errmsg.includes("duplicate key error")) {
-  //   res.status(500).send("Duplicate category found!");
-  //   res.status(500).send("Failed to add category.");
-  // }
+categoryRouter.post("/add-category", async (req, res) => {
+  if (req.body && Object.keys(req.body).length != 0) {
+    let { catName, catImage } = req.body;
+    try {
+      let resultCat = await Category.find({ name: catName });
+      if (resultCat && Object.keys(resultCat).length > 0) {
+        console.log(resultCat);
+        res.status(400).send("Category already exists.");
+      } else {
+        let data = await updateImageToCloudinary(catImage, assetPath, catName);
+        let obj = new Category({
+          name: catName,
+          imageURL: data.url,
+        });
+        obj.save();
+        res.send("Category Added.");
+      }
+    } catch (error) {
+      res.status(500).send("Something went wrong!");
+    }
+  } else {
+    res.status(400).send("Please send valid category details.");
+  }
 });
 
 categoryRouter.get("/get-category", async (req, res) => {
-  const result = await Category.find({}, { _id: 0, name: 1 });
-
-  const categories = [];
-  result.map((cat) => {
-    categories.push(cat.name);
-  });
-  res.json(categories);
+  const result = await Category.find({}, { _id: 0, name: 1, imageURL: 1 });
+  res.json(result);
 });
 
 module.exports = categoryRouter;
