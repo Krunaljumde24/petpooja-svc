@@ -34,7 +34,7 @@ menuRouter.post("/add-menu-item", async (req, res) => {
       res.status(400).send("Menu already exists.");
     } else {
       try {
-        let uploadObj = updateImageToCloudinary(
+        let uploadObj = await updateImageToCloudinary(
           reqBody.image,
           "",
           reqBody.item
@@ -61,7 +61,7 @@ menuRouter.post("/add-menu-item", async (req, res) => {
   }
 });
 
-menuRouter.get("/get-item-by-name", async (req, res) => {
+menuRouter.get("/get-item-by-category", async (req, res) => {
   let query = req.query;
   if (query && Object.keys(query).length > 0) {
     try {
