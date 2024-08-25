@@ -21,6 +21,8 @@ app.get("/", (req, res) => {
   res.send("API is working");
 });
 
-app.listen(8090, () => {
+const port = process.env.PORT || 8090;
+
+app.listen(port, () => {
   console.log("Server is running on port 8090.");
 });
