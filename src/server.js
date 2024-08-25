@@ -9,9 +9,11 @@ const menuRouter = require("./router/menu-router");
 
 const app = express();
 
+let clientUrl = process.env.CLIENT_URL;
+
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: clientUrl }));
 
 app.use("/category", categoryRouter);
 app.use("/user", userRoute);
